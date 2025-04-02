@@ -117,7 +117,7 @@ public sealed partial class MainActivity : Activity
     [GeneratedRegex(@"\b\d+(\.\d+)?\b", RegexOptions.Compiled)]
     private static partial Regex NumberRegex();
 
-    [GeneratedRegex(@"\b(math|coroutine|table|os|string|package|debug|io|bit32|utf8|jit(\.util)?|ffi)\b", RegexOptions.Compiled)]
+    [GeneratedRegex(@"\b(math|coroutine|table|os|string|package|debug|io|bit32|utf8)\b", RegexOptions.Compiled)]
     private static partial Regex BuiltinTableRegex();
 
     private bool isHighlighting = false;
@@ -172,7 +172,7 @@ public sealed partial class MainActivity : Activity
                                   SpanTypes.ExclusiveExclusive);
             }
 
-            // Hightlight builtin functions (without prefixes)
+            // Highlight built-in functions (without prefixes)
             foreach (Match match in BuiltinFuncRegex().Matches(codeText))
             {
                 spannable.SetSpan(new ForegroundColorSpan(Color.Rgb(220, 220, 170)),
@@ -180,7 +180,7 @@ public sealed partial class MainActivity : Activity
                                   SpanTypes.ExclusiveExclusive);
             }
 
-            // Highlight built-in tables
+            // Highlight built-in modules
             foreach (Match match in BuiltinTableRegex().Matches(codeText))
             {
                 spannable.SetSpan(new ForegroundColorSpan(Color.Rgb(78, 201, 176)),

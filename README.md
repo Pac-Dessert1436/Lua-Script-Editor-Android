@@ -46,12 +46,12 @@ A lightweight Lua script editor and runner, built with .NET MAUI in C#, but only
 The editor supports highlighting for:
 - Keywords (`if`, `then`, `end`, etc.)
 - Built-in functions (`print`, `ipairs`, `tonumber`, etc.)
-- Built-in tables (`math`, `table`, `os`, etc.)
+- Built-in modules (`math`, `table`, `os`, etc.)
 - Strings and numbers
 - Comments (single-line and multi-line)
 
 ## Known Limitations
-- No `input` function support
+- No `input` function support (not even FFI or LuaJIT)
 - Limited error recovery for malformed scripts
 - No file save/load functionality
 - No auto-completion
