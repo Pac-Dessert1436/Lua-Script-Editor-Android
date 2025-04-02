@@ -4,6 +4,10 @@
 
 A lightweight Lua script editor and runner, built with .NET MAUI in C#, but only intended for Android platforms.
 
+## Example Usage of the App
+
+![](example_usage.png)
+
 ## Features
 
 - Syntax highlighting for Lua code (keywords, strings, numbers, comments)
@@ -41,12 +45,13 @@ A lightweight Lua script editor and runner, built with .NET MAUI in C#, but only
 ## Syntax Highlighting
 The editor supports highlighting for:
 - Keywords (`if`, `then`, `end`, etc.)
-- Built-in functions (`print`, `table`, etc.)
+- Built-in functions (`print`, `ipairs`, `tonumber`, etc.)
+- Built-in tables (`math`, `table`, `os`, etc.)
 - Strings and numbers
 - Comments (single-line and multi-line)
 
 ## Known Limitations
-- No `input()` function support
+- No `input` function support
 - Limited error recovery for malformed scripts
 - No file save/load functionality
 - No auto-completion
@@ -57,4 +62,5 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
+---
 **Have a nice day scripting in Lua!** 🚀
