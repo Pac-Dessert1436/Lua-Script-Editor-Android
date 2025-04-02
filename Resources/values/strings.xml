@@ -1,0 +1,9 @@
+<resources>
+	<string name="app_name">Lua Script Editor</string>
+	<string name="starting_caption">Edit your Lua script:</string>
+	<string name="run_script_text">RUN</string>
+	<string name="output_caption">Script output:</string>
+	<string name="go_back_text">BACK</string>
+	<string name="clear_text">CLEAR CODE</string>
+	<string name="lua_code_hint">Enter your Lua code here...</string>
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txtCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/output_caption"
+        android:textSize="24sp"
+        android:textColor="#1E1E1E"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/btnGoBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/go_back_button"
+        android:text="@string/go_back_text"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:padding="10dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/txtCaption">
+
+        <TextView
+            android:id="@+id/tvOutput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="#1E1E1E"
+            android:fontFamily="monospace"
+            android:textIsSelectable="true" />
+    </ScrollView>
+</RelativeLayout>

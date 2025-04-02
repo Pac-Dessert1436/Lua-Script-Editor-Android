@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txtCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/starting_caption"
+        android:textSize="24sp"
+        android:textColor="#1E1E1E"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/btnRunScript"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/run_button"
+        android:text="@string/run_script_text"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:padding="10dp" />
+
+    <EditText
+        android:id="@+id/etLuaScript"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/txtCaption"
+        android:layout_above="@+id/btnClear"
+        android:singleLine="true"
+        android:inputType="textMultiLine"
+        android:gravity="top|start"
+        android:padding="8dp"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:background="#1E1E1E"
+        android:fontFamily="monospace"
+        android:textColorHint="#CCCCCC"
+        android:hint="@string/lua_code_hint" />
+
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/clear_text"
+        android:background="#F44336"
+        android:textColor="#FFFFFF" />
+</RelativeLayout>
