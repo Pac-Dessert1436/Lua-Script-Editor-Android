@@ -51,8 +51,9 @@ The editor supports highlighting for:
 - Comments (single-line and multi-line)
 
 ## Known Limitations
-- No `input` function support (not even FFI or LuaJIT)
+- No `input` function or `bit32` module support (not even FFI or LuaJIT)
 - Limited error recovery for malformed scripts
+- Limited usage of the `require` function
 - No file save/load functionality
 - No auto-completion
 

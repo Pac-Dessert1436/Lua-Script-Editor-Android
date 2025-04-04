@@ -102,7 +102,7 @@ public sealed partial class MainActivity : Activity
     [GeneratedRegex(@"\b(local|nil|true|false|and|or|not)\b", RegexOptions.Compiled)]
     private static partial Regex GeneralKeywordRegex();
 
-    [GeneratedRegex(@"\b(assert|collectgarbage|dofile|error|(get|set)metatable|i?pairs|load(file)?|next|x?pcall|print|raw(equal|get|len|set)|select|to(number|string)|type|unpack)\b", RegexOptions.Compiled)]
+    [GeneratedRegex(@"\b(assert|collectgarbage|dofile|error|(get|set)metatable|i?pairs|load(file)?|next|x?pcall|print|require|raw(equal|get|len|set)|select|to(number|string)|type|unpack)\b", RegexOptions.Compiled)]
     private static partial Regex BuiltinFuncRegex();
 
     [GeneratedRegex(@"\b(break|do|else|elseif|end|for|(local )?function|goto|if|in|repeat|return|then|until|while)\b", RegexOptions.Compiled)]
@@ -117,7 +117,7 @@ public sealed partial class MainActivity : Activity
     [GeneratedRegex(@"\b\d+(\.\d+)?\b", RegexOptions.Compiled)]
     private static partial Regex NumberRegex();
 
-    [GeneratedRegex(@"\b(math|coroutine|table|os|string|package|debug|io|bit32|utf8)\b", RegexOptions.Compiled)]
+    [GeneratedRegex(@"\b(math|coroutine|table|os|string|package|debug|io|utf8)\b", RegexOptions.Compiled)]
     private static partial Regex BuiltinTableRegex();
 
     private bool isHighlighting = false;
