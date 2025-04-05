@@ -34,10 +34,10 @@ A lightweight Lua script editor and runner, built with .NET MAUI in C#, but only
 3. View output in the results screen
 4. Use "Back" to return to editing
 
-# Important Notes  
+## Important Notes  
 
 ⚠ **Infinite Loop Protection & Best Practices**  
-- Now the app includes a **5-second timeout** to prevent permanent freezes from infinite loops  
+- Now the app includes a _**5-second timeout**_ to prevent permanent freezes from infinite loops  
 - Nevertheless, scripts containing loops without proper exit conditions will:  
   - Freeze the UI temporarily during execution
   - Terminate automatically after 5 seconds
