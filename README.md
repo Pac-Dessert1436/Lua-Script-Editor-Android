@@ -14,6 +14,7 @@ A lightweight Lua script editor and runner, built with .NET MAUI in C#, but only
 - Code execution with output display
 - Clean, intuitive interface
 - Error handling for script execution
+- 5-second execution timeout for safety
 
 ## Getting Started
 
@@ -33,13 +34,21 @@ A lightweight Lua script editor and runner, built with .NET MAUI in C#, but only
 3. View output in the results screen
 4. Use "Back" to return to editing
 
-### Important Notes
-⚠️ **Warning about infinite loops**:
-- Scripts with infinite loops (without `break` statements) will crash the app
-- The execution environment has no timeout mechanism
-- Example dangerous code:
+# Important Notes  
+
+⚠ **Infinite Loop Protection & Best Practices**  
+- Now the app includes a **5-second timeout** to prevent permanent freezes from infinite loops  
+- Nevertheless, scripts containing loops without proper exit conditions will:  
+  - Freeze the UI temporarily during execution
+  - Terminate automatically after 5 seconds
+  - Display a timeout error message
+- **Recommendation**: Always test loops with small iterations first  
+- **Example risky code**:  
   ```lua
-  while true do end  -- This will crash the app
+  -- WARNING: This will trigger the timeout mechanism
+  while true do 
+    -- Missing break condition
+  end
   ```
 
 ## Syntax Highlighting
@@ -50,12 +59,12 @@ The editor supports highlighting for:
 - Strings and numbers
 - Comments (single-line and multi-line)
 
-## Known Limitations
-- No `input` function or `bit32` module support (not even FFI or LuaJIT)
-- Limited error recovery for malformed scripts
-- Limited usage of the `require` function
-- No file save/load functionality
-- No auto-completion
+## Known Limitations  
+- No file operations (save/load) or `input()` functionality
+- Limited standard library support (e.g., no `bit32`, restricted `require`)
+- Basic error recovery – malformed scripts may produce unclear errors
+- No auto-completion or intelligent code suggestions
+- Complex scripts may hit timeout before completion
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
