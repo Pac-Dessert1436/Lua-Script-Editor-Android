@@ -15,7 +15,6 @@ public sealed partial class MainActivity : Activity
 
     internal static readonly System.Text.StringBuilder scriptOutput = new();
 
-    private CancellationTokenSource? _luaExecutionCts;
     private const int LUA_TIMEOUT_MS = 5000; // 5 second timeout
 
     internal string EvaluateLuaScriptOutput()
@@ -28,8 +27,8 @@ public sealed partial class MainActivity : Activity
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
 
             // Create a new cancellation token source
-            _luaExecutionCts = new CancellationTokenSource();
-
+            using var _luaExecutionCts = new CancellationTokenSource();
+             
             // Start a task to run the Lua code with timeout
             var luaTask = Task.Run(() =>
             {
@@ -43,8 +42,6 @@ public sealed partial class MainActivity : Activity
                     foreach (var item in results)
                         scriptOutput.AppendLine(item?.ToString());
                 }
-
-                return scriptOutput.ToString();
             }, _luaExecutionCts.Token);
 
             // Wait for the task to complete or timeout
@@ -54,24 +51,12 @@ public sealed partial class MainActivity : Activity
                 throw new Exception("Script execution was cancelled (possible infinite loop)");
             }
 
-            return luaTask.Result;
+            return scriptOutput.ToString();
         }
         catch (Exception ex)
         {
             return $"Error executing Lua script:\n{ex.Message}";
         }
-        finally
-        {
-            _luaExecutionCts?.Dispose();
-            _luaExecutionCts = null;
-        }
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        _luaExecutionCts?.Cancel();
-        _luaExecutionCts?.Dispose();
     }
 
     public static void LuaPrint(params object[] objects)
