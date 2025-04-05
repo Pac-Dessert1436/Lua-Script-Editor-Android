@@ -15,31 +15,63 @@ public sealed partial class MainActivity : Activity
 
     internal static readonly System.Text.StringBuilder scriptOutput = new();
 
+    private CancellationTokenSource? _luaExecutionCts;
+    private const int LUA_TIMEOUT_MS = 5000; // 5 second timeout
+
     internal string EvaluateLuaScriptOutput()
     {
+        scriptOutput.Clear();
+
         try
         {
             using NLua.Lua lua = new();
-            // Redirect print to our StringBuilder
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
 
-            // Execute the script
-            var results = lua.DoString(storedLuaCode);
+            // Create a new cancellation token source
+            _luaExecutionCts = new CancellationTokenSource();
 
-            // Add any return values to output
-            if (results is not null && results.Length > 0)
+            // Start a task to run the Lua code with timeout
+            var luaTask = Task.Run(() =>
             {
-                scriptOutput.AppendLine("\n-- Return value(s) --");
-                foreach (var item in results)
-                    scriptOutput.AppendLine(item?.ToString());
+                // Execute the script
+                var results = lua.DoString(storedLuaCode);
+
+                // Add any return values to output
+                if (results is not null && results.Length > 0)
+                {
+                    scriptOutput.AppendLine("\n-- Return value(s) --");
+                    foreach (var item in results)
+                        scriptOutput.AppendLine(item?.ToString());
+                }
+
+                return scriptOutput.ToString();
+            }, _luaExecutionCts.Token);
+
+            // Wait for the task to complete or timeout
+            if (!luaTask.Wait(LUA_TIMEOUT_MS, _luaExecutionCts.Token))
+            {
+                _luaExecutionCts.Cancel();
+                throw new Exception("Script execution was cancelled (possible infinite loop)");
             }
 
-            return scriptOutput.ToString();
+            return luaTask.Result;
         }
         catch (Exception ex)
         {
             return $"Error executing Lua script:\n{ex.Message}";
         }
+        finally
+        {
+            _luaExecutionCts?.Dispose();
+            _luaExecutionCts = null;
+        }
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        _luaExecutionCts?.Cancel();
+        _luaExecutionCts?.Dispose();
     }
 
     public static void LuaPrint(params object[] objects)
@@ -108,10 +140,10 @@ public sealed partial class MainActivity : Activity
     [GeneratedRegex(@"\b(break|do|else|elseif|end|for|(local )?function|goto|if|in|repeat|return|then|until|while)\b", RegexOptions.Compiled)]
     private static partial Regex SnippetKeywordRegex();
 
-    [GeneratedRegex(@"(""[^""\\]*(?:\\.[^""\\]*)*""|'[^'\\]*(?:\\.[^'\\]*)*')", RegexOptions.Compiled)]
+    [GeneratedRegex(@"(""[^""\\]*(?:\\.[^""\\]*)*""|'[^'\\]*(?:\\.[^'\\]*)*'|\[\[.*?\]\])", RegexOptions.Compiled)]
     private static partial Regex StringRegex();
 
-    [GeneratedRegex(@"(--[^\n]*|\[\[.*?\]\])", RegexOptions.Singleline)]
+    [GeneratedRegex(@"(--[^\n]*|--\[\[.*?\]\])", RegexOptions.Singleline)]
     private static partial Regex CommentRegex();
 
     [GeneratedRegex(@"\b\d+(\.\d+)?\b", RegexOptions.Compiled)]
