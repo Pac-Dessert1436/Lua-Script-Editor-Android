@@ -1,7 +1,7 @@
-using Android.Text.Style;
-using Android.Text;
-using System.Text.RegularExpressions;
 using Android.Graphics;
+using Android.Text;
+using Android.Text.Style;
+using System.Text.RegularExpressions;
 
 namespace LuaScriptEditor;
 
@@ -26,7 +26,7 @@ public sealed partial class MainActivity : Activity
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
 
             // Wrap user code directly in Lua, with timeout protection
-            var results = lua.DoString($@"
+            object[] results = lua.DoString($@"
 local co = coroutine.create(function()
     {storedLuaCode}
 end)
@@ -43,7 +43,7 @@ if success then return result else error(result) end
 ");
 
             // Add any return values to output
-            if (results is not null && results.Length > 0)
+            if (results.Length > 0 && !results.SequenceEqual([null]))
             {
                 scriptOutput.AppendLine("\n-- Return value(s) --");
                 foreach (var item in results)
@@ -72,6 +72,7 @@ if success then return result else error(result) end
         base.OnCreate(savedInstanceState);
         ShowMainPage(null, EventArgs.Empty);
     }
+
     public void ShowMainPage(object? sender, EventArgs e)
     {
         SetContentView(Resource.Layout.activity_main);
@@ -123,7 +124,7 @@ if success then return result else error(result) end
     [GeneratedRegex(@"\b(break|do|else|elseif|end|for|(local )?function|goto|if|in|repeat|return|then|until|while)\b", RegexOptions.Compiled)]
     private static partial Regex SnippetKeywordRegex();
 
-    [GeneratedRegex(@"(""[^""\\]*(?:\\.[^""\\]*)*""|'[^'\\]*(?:\\.[^'\\]*)*'|(\[\[.*?\]\]))", RegexOptions.Compiled)]
+    [GeneratedRegex(@"\[\[*(?:\\.*)*\]\]|(\'.*?\'|"".*?"")", RegexOptions.Compiled)]
     private static partial Regex StringRegex();
 
     [GeneratedRegex(@"--([^\n]*|\[\[.*?\]\])", RegexOptions.Singleline)]
