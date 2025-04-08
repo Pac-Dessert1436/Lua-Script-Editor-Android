@@ -15,7 +15,7 @@ public sealed partial class MainActivity : Activity
 
     internal static readonly System.Text.StringBuilder scriptOutput = new();
 
-    private const int LUA_TIMEOUT_MS = 5000; // 5 second timeout
+    private const int LUA_TIMEOUT_MILLISEC = 5000; // 5 second timeout
 
     internal string EvaluateLuaScriptOutput()
     {
@@ -25,30 +25,16 @@ public sealed partial class MainActivity : Activity
         {
             using NLua.Lua lua = new();
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
-
-            // Create a new cancellation token source
-            using var _luaExecutionCts = new CancellationTokenSource();
              
-            // Start a task to run the Lua code with timeout
-            var luaTask = Task.Run(() =>
-            {
-                // Execute the script
-                var results = lua.DoString(storedLuaCode);
+            // Execute the script
+            var results = lua.DoString(storedLuaCode);
 
-                // Add any return values to output
-                if (results is not null && results.Length > 0)
-                {
-                    scriptOutput.AppendLine("\n-- Return value(s) --");
-                    foreach (var item in results)
-                        scriptOutput.AppendLine(item?.ToString());
-                }
-            }, _luaExecutionCts.Token);
-
-            // Wait for the task to complete or timeout
-            if (!luaTask.Wait(LUA_TIMEOUT_MS, _luaExecutionCts.Token))
+            // Add any return values to output
+            if (results is not null && results.Length > 0)
             {
-                _luaExecutionCts.Cancel();
-                throw new Exception("Script execution was cancelled (possible infinite loop)");
+                scriptOutput.AppendLine("\n-- Return value(s) --");
+                foreach (var item in results)
+                    scriptOutput.AppendLine(item?.ToString());
             }
 
             return scriptOutput.ToString();
@@ -63,9 +49,15 @@ public sealed partial class MainActivity : Activity
     {
         if (objects.Length == 0)
             return;
+        System.Diagnostics.Stopwatch stopwatch = new();
+        stopwatch.Start();
         foreach (var obj in objects)
+        {
             scriptOutput.Append((obj ?? "nil").ToString() + ' ');
-
+            if (stopwatch.ElapsedMilliseconds == LUA_TIMEOUT_MILLISEC)
+                throw new Exception("Script execution timed out (possible infinite loop)");
+        }
+        stopwatch.Stop();
         scriptOutput.AppendLine();
     }
 
@@ -125,10 +117,10 @@ public sealed partial class MainActivity : Activity
     [GeneratedRegex(@"\b(break|do|else|elseif|end|for|(local )?function|goto|if|in|repeat|return|then|until|while)\b", RegexOptions.Compiled)]
     private static partial Regex SnippetKeywordRegex();
 
-    [GeneratedRegex(@"(""[^""\\]*(?:\\.[^""\\]*)*""|'[^'\\]*(?:\\.[^'\\]*)*'|\[\[.*?\]\])", RegexOptions.Compiled)]
+    [GeneratedRegex(@"(""[^""\\]*(?:\\.[^""\\]*)*""|'[^'\\]*(?:\\.[^'\\]*)*'|(\[\[.*?\]\]))", RegexOptions.Compiled)]
     private static partial Regex StringRegex();
 
-    [GeneratedRegex(@"(--[^\n]*|--\[\[.*?\]\])", RegexOptions.Singleline)]
+    [GeneratedRegex(@"--([^\n]*|\[\[.*?\]\])", RegexOptions.Singleline)]
     private static partial Regex CommentRegex();
 
     [GeneratedRegex(@"\b\d+(\.\d+)?\b", RegexOptions.Compiled)]
