@@ -13,30 +13,41 @@ public sealed partial class MainActivity : Activity
     private TextView? tvOutput;
     private string storedLuaCode = string.Empty;
 
-    internal static readonly System.Text.StringBuilder scriptOutput = new();
-
-    private const int LUA_TIMEOUT_MILLISEC = 5000; // 5 second timeout
+    internal static readonly System.Text.StringBuilder scriptOutput = new();  
 
     internal string EvaluateLuaScriptOutput()
     {
+        const int LUA_TIMEOUT_SECONDS = 5;
         scriptOutput.Clear();
 
         try
         {
-            using NLua.Lua lua = new();
+            using var lua = new NLua.Lua();
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
-             
-            // Execute the script
-            var results = lua.DoString(storedLuaCode);
 
-            // Add any return values to output
-            if (results is not null && results.Length > 0)
-            {
-                scriptOutput.AppendLine("\n-- Return value(s) --");
-                foreach (var item in results)
-                    scriptOutput.AppendLine(item?.ToString());
-            }
+            // Wrap user code with timeout protection
+            string wrappedScript = $@"
+local co = coroutine.create(function()
+    {storedLuaCode}
+end)
+local start_time = os.clock()
 
+debug.sethook(co, function(event)
+    if os.clock() - start_time > {LUA_TIMEOUT_SECONDS} then
+        error('Script execution timed out (max {LUA_TIMEOUT_SECONDS} seconds)')
+    end
+end, '', 100000)  -- Check every 100,000 instructions
+
+local success, result = coroutine.resume(co)
+if not success then
+    error(result)
+end
+return result
+";
+
+            var results = lua.DoString(wrappedScript);
+
+            // Process results...
             return scriptOutput.ToString();
         }
         catch (Exception ex)
@@ -49,15 +60,8 @@ public sealed partial class MainActivity : Activity
     {
         if (objects.Length == 0)
             return;
-        System.Diagnostics.Stopwatch stopwatch = new();
-        stopwatch.Start();
         foreach (var obj in objects)
-        {
             scriptOutput.Append((obj ?? "nil").ToString() + ' ');
-            if (stopwatch.ElapsedMilliseconds == LUA_TIMEOUT_MILLISEC)
-                throw new Exception("Script execution timed out (possible infinite loop)");
-        }
-        stopwatch.Stop();
         scriptOutput.AppendLine();
     }
 
