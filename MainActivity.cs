@@ -26,7 +26,7 @@ public sealed partial class MainActivity : Activity
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
 
             // Wrap user code directly in Lua, with timeout protection
-            var results = lua.DoString($@"
+            object[] results = lua.DoString($@"
 local co = coroutine.create(function()
     {storedLuaCode}
 end)
@@ -43,7 +43,7 @@ if success then return result else error(result) end
 ");
 
             // Add any return values to output
-            if (results is not null && results.Length > 0)
+            if (results.Length > 0 && !results.SequenceEqual([null]))
             {
                 scriptOutput.AppendLine("\n-- Return value(s) --");
                 foreach (var item in results)
