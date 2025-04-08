@@ -25,7 +25,7 @@ public sealed partial class MainActivity : Activity
             using NLua.Lua lua = new();
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
 
-            // Wrap user code with timeout protection
+            // Wrap user code directly in Lua, with timeout protection
             var results = lua.DoString($@"
 local co = coroutine.create(function()
     {storedLuaCode}
@@ -34,7 +34,7 @@ local start_time = os.clock()
 
 debug.sethook(co, function(event)
     if os.clock() - start_time > {LUA_TIMEOUT_SECONDS} then
-        error('Script execution timed out (max {LUA_TIMEOUT_SECONDS} seconds)')
+        error('Script execution timed out ({LUA_TIMEOUT_SECONDS}-second limit in execution)')
     end
 end, '', 100000)  -- Check every 100,000 instructions
 
