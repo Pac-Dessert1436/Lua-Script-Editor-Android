@@ -36,13 +36,10 @@ debug.sethook(co, function(event)
     if os.clock() - start_time > {LUA_TIMEOUT_SECONDS} then
         error('Script execution timed out ({LUA_TIMEOUT_SECONDS}-second limit in execution)')
     end
-end, '', 100000)  -- Check every 100,000 instructions
-
+end, '', 80000)  -- Check every 80,000 instructions
 local success, result = coroutine.resume(co)
-if not success then
-    error(result)
-end
-return result
+
+if success then return result else error(result) end
 ");
 
             // Add any return values to output
