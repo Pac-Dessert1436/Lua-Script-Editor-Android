@@ -22,11 +22,11 @@ public sealed partial class MainActivity : Activity
 
         try
         {
-            using var lua = new NLua.Lua();
+            using NLua.Lua lua = new();
             lua.RegisterFunction("print", typeof(MainActivity).GetMethod("LuaPrint"));
 
             // Wrap user code with timeout protection
-            string wrappedScript = $@"
+            var results = lua.DoString($@"
 local co = coroutine.create(function()
     {storedLuaCode}
 end)
@@ -43,11 +43,16 @@ if not success then
     error(result)
 end
 return result
-";
+");
 
-            var results = lua.DoString(wrappedScript);
+            // Add any return values to output
+            if (results is not null && results.Length > 0)
+            {
+                scriptOutput.AppendLine("\n-- Return value(s) --");
+                foreach (var item in results)
+                    scriptOutput.AppendLine(item?.ToString());
+            }
 
-            // Process results...
             return scriptOutput.ToString();
         }
         catch (Exception ex)
